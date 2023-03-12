@@ -1,22 +1,22 @@
-const mongoose = require('mongoose')
-const Strings = require('../config/strings')
+const mongoose = require("mongoose");
+const Strings = require("../config/strings");
 
-const ChatroomSchema = new mongoose.Schema({
+const ChatroomSchema = new mongoose.Schema(
+  {
     name: {
-        type: String,
-        unique: true,
-        required: true,
+      type: String,
+      unique: true,
+      required: true,
     },
     userId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'User',
-      required: true
+      ref: "User",
+      required: true,
+    },
   },
-},
-{
-    timestamps: true
-}
-)
+  {
+    timestamps: true,
+  }
+);
 
-module.exports = mongoose.model('Chatroom', ChatroomSchema)
-
+module.exports = mongoose.model("Chatroom", ChatroomSchema);
