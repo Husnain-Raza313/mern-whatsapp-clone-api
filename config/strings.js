@@ -6,5 +6,7 @@ const Strings = {
   pleaseAddPassword: 'Please add a password',
   pleaseAddMessage: 'Please write a message',
   userCreatedSuccess: 'User created successfully',
+  userLoggedInSuccess: 'User logged in successfully',
+  userExists:'User already exists',
 }
 module.exports = Strings
