@@ -2,6 +2,7 @@ const asyncHandler = require('express-async-handler')
 const bcrypt = require('bcryptjs')
 const Strings = require('../config/strings')
 const helpers = require('../helpers/helpers')
+const UserService = require('../services/usersServices')
 
 const registerUser = asyncHandler(async (req, res) => {
   const { name, username, email, phoneNumber, password } = req?.body
@@ -51,4 +52,11 @@ const loginUser = asyncHandler(async (req, res) => {
       res?.status(400)
       throw new Error('Invalid credentials')
   }
+})
+
+const searchUser = asyncHandler(async (req, res) => {
+
+  const usersList = await UserService.searchUser(req?.query, req.user.name)
+
+  res?.status(200).json(usersList, Strings.userFetchSuccessfully)
 })
