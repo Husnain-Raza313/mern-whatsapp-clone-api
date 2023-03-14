@@ -54,8 +54,7 @@ const loginUser = asyncHandler(async (req, res) => {
 
 const searchUser = asyncHandler(async (req, res) => {
 
-  const usersList = await UserService.searchUser(req?.query, req.user.name)
-
+  const usersList = req.query.name ? await UserService.searchUser(req?.query, req.user.name) : await User.find()
   res?.status(200).json([usersList, Strings.userFetchSuccessfully])
 })
 
