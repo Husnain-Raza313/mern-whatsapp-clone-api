@@ -3,10 +3,12 @@ const bcrypt = require('bcryptjs')
 const Strings = require('../config/strings')
 const helpers = require('../helpers/helpers')
 const UserService = require('../services/usersServices')
+const User = require('../models/userModel')
 
 const registerUser = asyncHandler(async (req, res) => {
-  const { name, username, email, phoneNumber, password } = req?.body
-  const userExist = await UserService.findOne({ phoneNumber })
+  const { name, username, phoneNumber, password } = req?.body
+  const userExist = await User.findOne({ phoneNumber })
+  console.log(userExist);
   if (userExist) {
       res?.status(400)
       throw new Error(Strings.userExists)
@@ -15,7 +17,6 @@ const registerUser = asyncHandler(async (req, res) => {
   const hashPassword = await bcrypt.hash(password, salt)
   const user = await User.create({name,
     username,
-    email,
     phoneNumber,
     password: hashPassword});
   if (user) {
@@ -23,8 +24,6 @@ const registerUser = asyncHandler(async (req, res) => {
           _id: user.id,
           name: user.name,
           username: user.username,
-          email: user.email,
-
       }
       res?.status(201).json(data, Strings.userCreatedSuccess)
   }
@@ -35,18 +34,17 @@ const loginUser = asyncHandler(async (req, res) => {
       phoneNumber,
       password
   } = req?.body
-
-  const user = User.findOne({ phoneNumber })
+  const user = await User.findOne({ phoneNumber })
+  console.log(user);
   if (user && (await bcrypt.compare(password, user.password))) {
       const data = {
           _id: user.id,
           name: user.name,
           username: user.username,
-          email: user.email,
           phoneNumber: user.phoneNumber,
           token: helpers.generateToken(user._id)
       }
-      res?.status(201).json(data, Strings.userLoggedInSuccess)
+      res?.status(200).json([data, Strings.userLoggedInSuccess])
   }
   else {
       res?.status(400)
@@ -58,5 +56,12 @@ const searchUser = asyncHandler(async (req, res) => {
 
   const usersList = await UserService.searchUser(req?.query, req.user.name)
 
-  res?.status(200).json(usersList, Strings.userFetchSuccessfully)
+  res?.status(200).json([usersList, Strings.userFetchSuccessfully])
 })
+
+const Users = {
+  loginUser,
+  registerUser,
+  searchUser
+}
+module.exports = Users
