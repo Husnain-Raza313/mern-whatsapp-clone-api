@@ -11,3 +11,11 @@ exports.searchUser = async function (userPayload, userName) {
       ]
   })
 }
+
+exports.findOneUser = async function ( phoneNumber ) {
+  return User.findOne({ phoneNumber })
+}
+
+exports.findAllUsers = async function ( ) {
+  return User.find()
+}

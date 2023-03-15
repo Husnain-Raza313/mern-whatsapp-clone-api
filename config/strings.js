@@ -8,6 +8,7 @@ const Strings = {
   userCreatedSuccess: 'User created successfully',
   userLoggedInSuccess: 'User logged in successfully',
   userExists:'User already exists',
-  userFetchSuccessfully: 'User fetched successfully'
+  userFetchSuccessfully: 'User fetched successfully',
+  pleaseAddOtp: 'Otp is missing',
 }
 module.exports = Strings
