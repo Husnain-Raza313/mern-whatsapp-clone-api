@@ -5,6 +5,7 @@ const ChatroomMessage = require("../models/chatroomMessageModel");
 const helpers = require("../helpers/helpers");
 const ChatroomService = require("../services/chatroomServices");
 const ChatroomParticipantService = require("../services/chatroomParticipantServices");
+const ChatroomMessageService = require("../services/chatroomMessageServices");
 
 const getChatroomMessages = asyncHandler(async (req, res) => {
   const { chatroomName } = req.query
@@ -12,7 +13,7 @@ const getChatroomMessages = asyncHandler(async (req, res) => {
 
 
   const chatroom = await ChatroomService.findChatroom( chatroomName )
-  const messages = await ChatroomMessage.find({ chatroomId: chatroom.id})
+  const messages = await ChatroomMessageService.findChatroomMessages( chatroom.id )
   const sender = await ChatroomParticipantService.findChatroomParticipant( req.user.id, chatroom.id)
   // helpers.subscribeChatroom(chatroom.id)
 
@@ -50,7 +51,7 @@ const createMessage = asyncHandler(async (req, res) => {
   if(chatroom){
     chatroomParticipant = await ChatroomParticipantService.findChatroomParticipant( req.user.id, chatroom.id )
     console.log(chatroomParticipant)
-    message = await ChatroomMessage.create({ body: body, chatroomParticipantId: chatroomParticipant.id, chatroomId: chatroom.id })
+    message = await ChatroomMessage.createChatroomMessage( body, chatroomParticipant.id, chatroom.id )
 
     // helpers.broadcastMessage(chatroom.id)
 
