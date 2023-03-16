@@ -3,15 +3,18 @@ const Chatroom = require("../models/chatroomModel");
 const ChatroomParticipant = require("../models/chatroomParticipantModel");
 const ChatroomMessage = require("../models/chatroomMessageModel");
 const helpers = require("../helpers/helpers");
+const ChatroomService = require("../services/chatroomServices");
 
 const getChatroomMessages = asyncHandler(async (req, res) => {
   const { chatroomName } = req.query
 
-  const chatroom = await Chatroom.findOne({ name: chatroomName })
+  
+
+  const chatroom = await ChatroomService.findChatroom( chatroomName )
   const messages = await ChatroomMessage.find({ chatroomId: chatroom.id})
   const sender = await ChatroomParticipant.findOne({ userId: req.user, chatroomId: chatroom.id })
-  helpers.subscribeChatroom(chatroom.id)
-  
+  // helpers.subscribeChatroom(chatroom.id)
+
   res?.status(200).json({ messages: messages, sender: sender, message: "Messages Fetched"});
 });
 
@@ -19,13 +22,13 @@ const createChatroom = asyncHandler(async (req, res) => {
   const { user2, chatroomName } = req.query
   let chatroomParticipant1;
   console.log(req.query)
-  let chatroom = await Chatroom.findOne({ name: chatroomName })
+  let chatroom = await ChatroomService.findChatroom( chatroomName )
   console.log(chatroom)
   if (chatroom){
     res?.status(400).json({ message: "Chatroom is already created" })
   }
   else{
-    chatroom = await Chatroom.create({name: chatroomName, userId: req.user.id})
+    chatroom = await ChatroomService.createChatroom( chatroomName, req.user.id )
     chatroomParticipant1 = await ChatroomParticipant.create({ userId: req.user.id, chatroomId: chatroom.id })
     await ChatroomParticipant.create({ userId: user2, chatroomId: chatroom.id })
 
@@ -40,7 +43,7 @@ const createChatroom = asyncHandler(async (req, res) => {
 const createMessage = asyncHandler(async (req, res) => {
   const { chatroomName, body } = req.body
   let message;
-  const chatroom = await Chatroom.findOne({ name: chatroomName })
+  const chatroom = await ChatroomService.findChatroom( chatroomName )
   console.log(chatroom.id);
   console.log(req.user.id)
   if(chatroom){
