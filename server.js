@@ -18,6 +18,7 @@ app.use(cors());
 app.use(express.json());
 
 app.use('/api/users', require('./routes/userRoutes'))
+app.use('/api', require('./routes/chatroomMessageRoutes'))
 
 app.listen(process.env.PORT || 5000, () => {
   console.log("Backend server is running!");
