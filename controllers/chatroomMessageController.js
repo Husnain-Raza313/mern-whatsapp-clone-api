@@ -4,15 +4,16 @@ const ChatroomParticipant = require("../models/chatroomParticipantModel");
 const ChatroomMessage = require("../models/chatroomMessageModel");
 const helpers = require("../helpers/helpers");
 const ChatroomService = require("../services/chatroomServices");
+const ChatroomParticipantService = require("../services/chatroomParticipantServices");
 
 const getChatroomMessages = asyncHandler(async (req, res) => {
   const { chatroomName } = req.query
 
-  
+
 
   const chatroom = await ChatroomService.findChatroom( chatroomName )
   const messages = await ChatroomMessage.find({ chatroomId: chatroom.id})
-  const sender = await ChatroomParticipant.findOne({ userId: req.user, chatroomId: chatroom.id })
+  const sender = await ChatroomParticipantService.findChatroomParticipant( req.user.id, chatroom.id)
   // helpers.subscribeChatroom(chatroom.id)
 
   res?.status(200).json({ messages: messages, sender: sender, message: "Messages Fetched"});
@@ -29,8 +30,8 @@ const createChatroom = asyncHandler(async (req, res) => {
   }
   else{
     chatroom = await ChatroomService.createChatroom( chatroomName, req.user.id )
-    chatroomParticipant1 = await ChatroomParticipant.create({ userId: req.user.id, chatroomId: chatroom.id })
-    await ChatroomParticipant.create({ userId: user2, chatroomId: chatroom.id })
+    chatroomParticipant1 = await ChatroomParticipantService.createChatroomParticipant( req.user.id, chatroom.id )
+    await ChatroomParticipantService.createChatroomParticipant( user2, chatroom.id )
 
     // helpers.subscribeChatroom(chatroom.id)
 
@@ -47,7 +48,7 @@ const createMessage = asyncHandler(async (req, res) => {
   console.log(chatroom.id);
   console.log(req.user.id)
   if(chatroom){
-    chatroomParticipant = await ChatroomParticipant.findOne({ userId: req.user.id, chatroomId: chatroom.id})
+    chatroomParticipant = await ChatroomParticipantService.findChatroomParticipant( req.user.id, chatroom.id )
     console.log(chatroomParticipant)
     message = await ChatroomMessage.create({ body: body, chatroomParticipantId: chatroomParticipant.id, chatroomId: chatroom.id })
 
