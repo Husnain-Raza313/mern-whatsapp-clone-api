@@ -20,6 +20,14 @@ app.use(express.json());
 app.use('/api/users', require('./routes/userRoutes'))
 app.use('/api', require('./routes/chatroomMessageRoutes'))
 
-app.listen(process.env.PORT || 5000, () => {
+const server = app.listen(process.env.PORT || 5000, () => {
   console.log("Backend server is running!");
 });
+
+const io = require('socket.io')(server, {
+  pingTimeout: 120000,
+  cors: {
+      origin: 'http://localhost:3000'
+  }
+})
+module.exports = io
