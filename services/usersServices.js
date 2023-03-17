@@ -6,7 +6,7 @@ exports.searchUser = async function (userPayload, userName) {
       $and: [
           { name: { $ne: userName } },
           {
-            name
+            name:g {$regex : name }
           }
       ]
   })
