@@ -26,7 +26,11 @@ const getChatroomMessages = asyncHandler(async (req, res) => {
 
   res
     ?.status(200)
-    .json({ messages: messages, sender: sender, message: Strings.messagesFetched });
+    .json({
+      messages: messages,
+      sender: sender,
+      message: Strings.messagesFetched,
+    });
 });
 
 const createChatroom = asyncHandler(async (req, res) => {
@@ -49,24 +53,22 @@ const createChatroom = asyncHandler(async (req, res) => {
       req.user.id,
       chatroom.id
     );
-    chatroomParticipant2=
+  chatroomParticipant2 =
     await ChatroomParticipantService.createChatroomParticipant(
-    user2,
-    chatroom.id
-  );
+      user2,
+      chatroom.id
+    );
   if (!chatroomParticipant1 || !chatroomParticipant2) {
     res?.status(401);
     throw new Error(Strings.chatNotCreated);
   }
   // helpers.subscribeChatroom(chatroom.id)
 
-  res
-    ?.status(200)
-    .json({
-      chat_room_id: chatroom.id,
-      sender: chatroomParticipant1.id,
-      message: Strings.chatroomCreatedSuccessfully,
-    });
+  res?.status(200).json({
+    chat_room_id: chatroom.id,
+    sender: chatroomParticipant1.id,
+    message: Strings.chatroomCreatedSuccessfully,
+  });
 });
 
 const createMessage = asyncHandler(async (req, res) => {
@@ -89,10 +91,10 @@ const createMessage = asyncHandler(async (req, res) => {
       chatroom.id
     );
 
-    if (!chatroomParticipant) {
-      res?.status(401);
-      throw new Error(Strings.participantNotFound);
-    }
+  if (!chatroomParticipant) {
+    res?.status(401);
+    throw new Error(Strings.participantNotFound);
+  }
   message = await ChatroomMessageService.createChatroomMessage(
     body,
     chatroomParticipant.id,

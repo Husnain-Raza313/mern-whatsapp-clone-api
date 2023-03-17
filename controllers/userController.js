@@ -93,6 +93,11 @@ const searchUser = asyncHandler(async (req, res) => {
   const usersList = req.query.name
     ? await UserService.searchUser(req?.query, req.user.name)
     : await UserService.findAllUsers();
+
+  if (!usersList) {
+    res?.status(400);
+    throw new Error(Strings.userNotFound);
+  }
   res?.status(200).json([usersList, Strings.userFetchSuccessfully]);
 });
 

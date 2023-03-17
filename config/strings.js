@@ -9,6 +9,7 @@ const Strings = {
   userLoggedInSuccess: 'User logged in successfully',
   userExists:'User already exists',
   userFetchSuccessfully: 'User fetched successfully',
+  userNotFound: "User not found!",
   pleaseAddOtp: 'Otp is missing',
   otpSentSuccess: 'Otp is sent successfully',
   wrongOtp: "Otp code is wrong",

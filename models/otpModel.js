@@ -14,10 +14,10 @@ const OtpSchema = new mongoose.Schema(
       required: [true, Strings.pleaseAddOtp],
       unique: true,
       length: 5,
-    }
+    },
   },
-    {
-      timestamps: true,
-    }
-  );
+  {
+    timestamps: true,
+  }
+);
 module.exports = mongoose.model("Otp", OtpSchema);
