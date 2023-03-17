@@ -8,62 +8,112 @@ const ChatroomParticipantService = require("../services/chatroomParticipantServi
 const ChatroomMessageService = require("../services/chatroomMessageServices");
 
 const getChatroomMessages = asyncHandler(async (req, res) => {
-  const { chatroomName } = req.query
+  const { chatroomName } = req?.query;
 
+  const chatroom = await ChatroomService.findChatroom(chatroomName);
+  if (!chatroom) {
+    res?.status(404);
+    throw new Error(Strings.chatroomNotFound);
+  }
 
-
-  const chatroom = await ChatroomService.findChatroom( chatroomName )
-  const messages = await ChatroomMessageService.findChatroomMessages( chatroom.id )
-  const sender = await ChatroomParticipantService.findChatroomParticipant( req.user.id, chatroom.id)
+  const messages = await ChatroomMessageService.findChatroomMessages(
+    chatroom.id
+  );
+  const sender = await ChatroomParticipantService.findChatroomParticipant(
+    req.user.id,
+    chatroom.id
+  );
   // helpers.subscribeChatroom(chatroom.id)
 
-  res?.status(200).json({ messages: messages, sender: sender, message: "Messages Fetched"});
+  res
+    ?.status(200)
+    .json({ messages: messages, sender: sender, message: Strings.messagesFetched });
 });
 
 const createChatroom = asyncHandler(async (req, res) => {
-  const { user2, chatroomName } = req.query
+  const { user2, chatroomName } = req?.query;
   let chatroomParticipant1;
-  console.log(req.query)
-  let chatroom = await ChatroomService.findChatroom( chatroomName )
-  console.log(chatroom)
-  if (chatroom){
-    res?.status(400).json({ message: "Chatroom is already created" })
+
+  if (!chatroomName) {
+    res?.status(401);
+    throw new Error(Strings.invalidChatroomName);
   }
-  else{
-    chatroom = await ChatroomService.createChatroom( chatroomName, req.user.id )
-    chatroomParticipant1 = await ChatroomParticipantService.createChatroomParticipant( req.user.id, chatroom.id )
-    await ChatroomParticipantService.createChatroomParticipant( user2, chatroom.id )
+  let chatroom = await ChatroomService.findChatroom(chatroomName);
 
-    // helpers.subscribeChatroom(chatroom.id)
-
-    res?.status(200).json({ chat_room_id: chatroom.id, sender: chatroomParticipant1.id, message: "Chatroom created successfully"});
-
+  if (chatroom) {
+    res?.status(400).json({ message: Strings.chatroomAlreadyCreated });
   }
 
+  chatroom = await ChatroomService.createChatroom(chatroomName, req.user.id);
+  chatroomParticipant1 =
+    await ChatroomParticipantService.createChatroomParticipant(
+      req.user.id,
+      chatroom.id
+    );
+    chatroomParticipant2=
+    await ChatroomParticipantService.createChatroomParticipant(
+    user2,
+    chatroom.id
+  );
+  if (!chatroomParticipant1 || !chatroomParticipant2) {
+    res?.status(401);
+    throw new Error(Strings.chatNotCreated);
+  }
+  // helpers.subscribeChatroom(chatroom.id)
+
+  res
+    ?.status(200)
+    .json({
+      chat_room_id: chatroom.id,
+      sender: chatroomParticipant1.id,
+      message: Strings.chatroomCreatedSuccessfully,
+    });
 });
 
 const createMessage = asyncHandler(async (req, res) => {
-  const { chatroomName, body } = req.body
+  const { chatroomName, body } = req.body;
   let message;
-  const chatroom = await ChatroomService.findChatroom( chatroomName )
-  console.log(chatroom.id);
-  console.log(req.user.id)
-  if(chatroom){
-    chatroomParticipant = await ChatroomParticipantService.findChatroomParticipant( req.user.id, chatroom.id )
-    console.log(chatroomParticipant)
-    message = await ChatroomMessage.createChatroomMessage( body, chatroomParticipant.id, chatroom.id )
-
-    // helpers.broadcastMessage(chatroom.id)
-
-    res?.status(200).json({ body: message, message: "Message created successfully"});
+  if (!chatroomName || !body) {
+    res?.status(401);
+    throw new Error(Strings.invalidInput);
   }
-  else{
-    res?.status(400).json({ message: "OOPS! Message is not created" })
+  const chatroom = await ChatroomService.findChatroom(chatroomName);
+
+  if (!chatroom) {
+    res?.status(404);
+    throw new Error(Strings.chatroomNotFound);
   }
+
+  chatroomParticipant =
+    await ChatroomParticipantService.findChatroomParticipant(
+      req.user.id,
+      chatroom.id
+    );
+
+    if (!chatroomParticipant) {
+      res?.status(401);
+      throw new Error(Strings.participantNotFound);
+    }
+  message = await ChatroomMessage.createChatroomMessage(
+    body,
+    chatroomParticipant.id,
+    chatroom.id
+  );
+
+  if (!message) {
+    res?.status(401);
+    throw new Error(Strings.messageNotCreated);
+  }
+
+  // helpers.broadcastMessage(chatroom.id)
+
+  res
+    ?.status(200)
+    .json({ body: message, message: Strings.messageCreatedSuccessfully });
 });
 const ChatroomMessages = {
   getChatroomMessages,
   createChatroom,
-  createMessage
+  createMessage,
 };
 module.exports = ChatroomMessages;

@@ -25,7 +25,7 @@ const registerUser = asyncHandler(async (req, res) => {
   if (otp.code !== otpCode) {
     console.log(otp.code);
     res?.status(400);
-    throw new Error("OTP code is wrong");
+    throw new Error(Strings.wrongOtp);
   } else {
     const salt = await bcrypt.genSalt(10);
     const hashPassword = await bcrypt.hash(password, salt);
@@ -110,7 +110,7 @@ const loginUser = asyncHandler(async (req, res) => {
     res?.status(200).json([data, Strings.userLoggedInSuccess]);
   } else {
     res?.status(400);
-    throw new Error("Invalid credentials");
+    throw new Error(Strings.invalidCredentials);
   }
 });
 
