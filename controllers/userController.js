@@ -25,16 +25,16 @@ const registerUser = asyncHandler(async (req, res) => {
   if (otp.code !== otpCode) {
     console.log(otp.code);
     res?.status(400);
-    throw new Error("OTP code is wrong");
+    throw new Error(Strings.wrongOtp);
   } else {
     const salt = await bcrypt.genSalt(10);
     const hashPassword = await bcrypt.hash(password, salt);
-    const user = await User.create({
+    const user = await UserService.createUser(
       name,
       username,
       phoneNumber,
-      password: hashPassword,
-    });
+      hashPassword
+    );
     if (user) {
       const data = {
         _id: user.id,
@@ -48,52 +48,27 @@ const registerUser = asyncHandler(async (req, res) => {
 });
 
 const checkUser = asyncHandler(async (req, res) => {
-  const { name, username, phoneNumber, password } = req?.body;
-  const userExist = await UserService.findOneUser(phoneNumber);
-  if (userExist) {
-    res?.status(400);
-    throw new Error(Strings.userExists);
-  } else {
-    try {
-      const instance = new User({ name, username, phoneNumber, password });
-      await instance.validate();
-      sendOtp(phoneNumber);
-      res?.status(201).json(Strings.userCreatedSuccess);
-    } catch (error) {
-      res?.status(400).json(error);
-    }
-  }
-});
-const sendOtp = async (phoneNumber) => {
   let randomN = Math.floor(Math.random() * 90000) + 10000;
 
-  const saveOtp = async (phoneNumber, otpCode) => {
-    console.log(otpCode);
-    const newOtp = new Otp({
-      phoneNumber: phoneNumber,
-      code: otpCode,
-    });
-    try {
-      const otp = await newOtp.save();
-      return otp;
-    } catch (error) {
-      console.log("error");
-    }
-  };
-
-  try {
-    await client.messages.create({
-      body: `Enter this Otp ${randomN}`,
-      from: otpPhoneNumber,
-      to: phoneNumber,
-    });
-
-    const obj = await saveOtp(phoneNumber, randomN);
-    console.log(obj);
-  } catch (error) {
-    console.log("error generating otp");
+  const clientMessage = await client.messages.create({
+    body: `Enter this Otp ${randomN}`,
+    from: otpPhoneNumber,
+    to: req?.body?.phoneNumber,
+  });
+  if (!clientMessage) {
+    res?.status(400);
+    throw new Error();
   }
-};
+
+  const newOtp = await OtpService.createOtp(req?.body?.phoneNumber, randomN);
+
+  if (!newOtp) {
+    res?.status(400);
+    throw new Error();
+  }
+
+  res?.status(201).json(Strings.otpSentSuccess);
+});
 
 const loginUser = asyncHandler(async (req, res) => {
   const { phoneNumber, password } = req?.body;
@@ -110,7 +85,7 @@ const loginUser = asyncHandler(async (req, res) => {
     res?.status(200).json([data, Strings.userLoggedInSuccess]);
   } else {
     res?.status(400);
-    throw new Error("Invalid credentials");
+    throw new Error(Strings.invalidCredentials);
   }
 });
 
@@ -118,6 +93,11 @@ const searchUser = asyncHandler(async (req, res) => {
   const usersList = req.query.name
     ? await UserService.searchUser(req?.query, req.user.name)
     : await UserService.findAllUsers();
+
+  if (!usersList) {
+    res?.status(400);
+    throw new Error(Strings.userNotFound);
+  }
   res?.status(200).json([usersList, Strings.userFetchSuccessfully]);
 });
 

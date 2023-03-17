@@ -1,12 +1,12 @@
 const mongoose = require("mongoose");
-const Strings = require('../config/strings')
+const Strings = require("../config/strings");
 
 const ChatroomMessageSchema = new mongoose.Schema(
   {
     body: {
       type: String,
-      required: [true, Strings.pleaseAddMessage]
-  },
+      required: [true, Strings.pleaseAddMessage],
+    },
     chatroomParticipantId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "ChatroomParticipant",
@@ -23,7 +23,4 @@ const ChatroomMessageSchema = new mongoose.Schema(
   }
 );
 
-module.exports = mongoose.model(
-  "ChatroomMessage",
-  ChatroomMessageSchema
-);
+module.exports = mongoose.model("ChatroomMessage", ChatroomMessageSchema);

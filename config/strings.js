@@ -9,6 +9,22 @@ const Strings = {
   userLoggedInSuccess: 'User logged in successfully',
   userExists:'User already exists',
   userFetchSuccessfully: 'User fetched successfully',
+  userNotFound: "User not found!",
   pleaseAddOtp: 'Otp is missing',
+  otpSentSuccess: 'Otp is sent successfully',
+  wrongOtp: "Otp code is wrong",
+  invalidCredentials: "Invalid Credentials",
+
+  messagesFetched: "Messages fetched successfully",
+  chatroomNotFound: "Chatroom Not Found",
+  invalidChatroomName: "Chatroom name is invalid",
+  chatroomAlreadyCreated: "Chatroom is Already Created",
+  chatNotCreated: "Oops! Chatroom Not Created",
+  invalidInput: "Invalid Input",
+  participantNotFound: "Chat Participant Not Found!",
+  messageNotCreated: "Oops! Message Not Created",
+  messageCreatedSuccessfully: "Message is created successfully",
+  chatroomCreatedSuccessfully: "Chatroom is created successfully",
+
 }
 module.exports = Strings
