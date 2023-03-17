@@ -5,7 +5,5 @@ exports.findChatroom = async function ( name ) {
 }
 
 exports.createChatroom = async function ( name, userId ) {
-  chatroom = Chatroom.new({ name, userId })
-  return chatroom.save()
-
+  return Chatroom.create({ name, userId })
 }

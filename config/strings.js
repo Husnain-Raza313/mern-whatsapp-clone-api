@@ -15,7 +15,7 @@ const Strings = {
 
   messagesFetched: "Messages fetched successfully",
   chatroomNotFound: "Chatroom Not Found",
-  invalidChatroomName: "Chatroom is invalid",
+  invalidChatroomName: "Chatroom name is invalid",
   chatroomAlreadyCreated: "Chatroom is Already Created",
   chatNotCreated: "Oops! Chatroom Not Created",
   invalidInput: "Invalid Input",

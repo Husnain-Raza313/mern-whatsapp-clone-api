@@ -5,7 +5,5 @@ exports.findChatroomParticipant = async function ( userId, chatroomId ) {
 }
 
 exports.createChatroomParticipant = async function ( userId, chatroomId ) {
-  chatroomParticipant = ChatroomParticipant.new({ userId, chatroomId })
-  return chatroomParticipant.save()
-
+  return ChatroomParticipant.create({ userId, chatroomId })
 }

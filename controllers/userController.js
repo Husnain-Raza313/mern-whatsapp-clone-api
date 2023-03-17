@@ -29,12 +29,12 @@ const registerUser = asyncHandler(async (req, res) => {
   } else {
     const salt = await bcrypt.genSalt(10);
     const hashPassword = await bcrypt.hash(password, salt);
-    const user = await User.create({
+    const user = await UserService.createUser(
       name,
       username,
       phoneNumber,
-      password: hashPassword,
-    });
+      hashPassword
+    );
     if (user) {
       const data = {
         _id: user.id,
@@ -53,16 +53,17 @@ const checkUser = asyncHandler(async (req, res) => {
   if (userExist) {
     res?.status(400);
     throw new Error(Strings.userExists);
-  } else {
-    try {
-      const instance = new User({ name, username, phoneNumber, password });
-      await instance.validate();
-      sendOtp(phoneNumber);
-      res?.status(201).json(Strings.userCreatedSuccess);
-    } catch (error) {
-      res?.status(400).json(error);
-    }
   }
+  const instance = new User({ name, username, phoneNumber, password });
+      if(await instance.validate()){
+        sendOtp(phoneNumber);
+        res?.status(201).json(Strings.userCreatedSuccess);
+      }
+
+     else {
+      res?.status(400);
+      throw new Error();
+    }
 });
 const sendOtp = async (phoneNumber) => {
   let randomN = Math.floor(Math.random() * 90000) + 10000;

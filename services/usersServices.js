@@ -6,7 +6,7 @@ exports.searchUser = async function (userPayload, userName) {
       $and: [
           { name: { $ne: userName } },
           {
-            name:g {$regex : name }
+            name: { $regex : name }
           }
       ]
   })
@@ -19,3 +19,13 @@ exports.findOneUser = async function ( phoneNumber ) {
 exports.findAllUsers = async function ( ) {
   return User.find()
 }
+
+exports.createUser = async function ( name, username, phoneNumber, password ) {
+  return User.create({
+    name,
+    username,
+    phoneNumber,
+    password
+  });
+}
+

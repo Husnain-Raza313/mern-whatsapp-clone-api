@@ -1,8 +1,7 @@
 const asyncHandler = require("express-async-handler");
-const Chatroom = require("../models/chatroomModel");
-const ChatroomParticipant = require("../models/chatroomParticipantModel");
 const ChatroomMessage = require("../models/chatroomMessageModel");
 const helpers = require("../helpers/helpers");
+const Strings = require("../config/strings");
 const ChatroomService = require("../services/chatroomServices");
 const ChatroomParticipantService = require("../services/chatroomParticipantServices");
 const ChatroomMessageService = require("../services/chatroomMessageServices");
@@ -94,7 +93,7 @@ const createMessage = asyncHandler(async (req, res) => {
       res?.status(401);
       throw new Error(Strings.participantNotFound);
     }
-  message = await ChatroomMessage.createChatroomMessage(
+  message = await ChatroomMessageService.createChatroomMessage(
     body,
     chatroomParticipant.id,
     chatroom.id
