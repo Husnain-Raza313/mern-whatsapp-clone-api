@@ -10,6 +10,7 @@ const Strings = {
   userExists:'User already exists',
   userFetchSuccessfully: 'User fetched successfully',
   pleaseAddOtp: 'Otp is missing',
+  otpSentSuccess: 'Otp is sent successfully',
   wrongOtp: "Otp code is wrong",
   invalidCredentials: "Invalid Credentials",
 

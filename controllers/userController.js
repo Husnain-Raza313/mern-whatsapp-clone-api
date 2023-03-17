@@ -48,53 +48,27 @@ const registerUser = asyncHandler(async (req, res) => {
 });
 
 const checkUser = asyncHandler(async (req, res) => {
-  const { name, username, phoneNumber, password } = req?.body;
-  const userExist = await UserService.findOneUser(phoneNumber);
-  if (userExist) {
-    res?.status(400);
-    throw new Error(Strings.userExists);
-  }
-  const instance = new User({ name, username, phoneNumber, password });
-      if(await instance.validate()){
-        sendOtp(phoneNumber);
-        res?.status(201).json(Strings.userCreatedSuccess);
-      }
-
-     else {
-      res?.status(400);
-      throw new Error();
-    }
-});
-const sendOtp = async (phoneNumber) => {
   let randomN = Math.floor(Math.random() * 90000) + 10000;
 
-  const saveOtp = async (phoneNumber, otpCode) => {
-    console.log(otpCode);
-    const newOtp = new Otp({
-      phoneNumber: phoneNumber,
-      code: otpCode,
-    });
-    try {
-      const otp = await newOtp.save();
-      return otp;
-    } catch (error) {
-      console.log("error");
-    }
-  };
-
-  try {
-    await client.messages.create({
-      body: `Enter this Otp ${randomN}`,
-      from: otpPhoneNumber,
-      to: phoneNumber,
-    });
-
-    const obj = await saveOtp(phoneNumber, randomN);
-    console.log(obj);
-  } catch (error) {
-    console.log("error generating otp");
+  const clientMessage = await client.messages.create({
+    body: `Enter this Otp ${randomN}`,
+    from: otpPhoneNumber,
+    to: req?.body?.phoneNumber,
+  });
+  if (!clientMessage) {
+    res?.status(400);
+    throw new Error();
   }
-};
+
+  const newOtp = await OtpService.createOtp(req?.body?.phoneNumber, randomN);
+
+  if (!newOtp) {
+    res?.status(400);
+    throw new Error();
+  }
+
+  res?.status(201).json(Strings.otpSentSuccess);
+});
 
 const loginUser = asyncHandler(async (req, res) => {
   const { phoneNumber, password } = req?.body;

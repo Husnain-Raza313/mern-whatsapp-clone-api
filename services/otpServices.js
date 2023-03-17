@@ -7,3 +7,10 @@ exports.findLatestOtp = async function ( phoneNumber ) {
 exports.deleteOtpRecords = async function ( phoneNumber ) {
   return Otp.deleteMany({ phoneNumber });
 }
+
+exports.createOtp = async function ( phoneNumber, code ) {
+  return Otp.create({
+    phoneNumber,
+    code
+  });
+}
