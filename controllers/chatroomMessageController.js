@@ -22,6 +22,7 @@ const getChatroomMessages = asyncHandler(async (req, res) => {
     req.user.id,
     chatroom.id
   );
+  // for connecting the users to a chat room
   // helpers.subscribeChatroom(chatroom.id)
 
   res
@@ -62,6 +63,7 @@ const createChatroom = asyncHandler(async (req, res) => {
     res?.status(401);
     throw new Error(Strings.chatNotCreated);
   }
+  // for connecting the users to a chat room
   // helpers.subscribeChatroom(chatroom.id)
 
   res?.status(200).json({
@@ -105,7 +107,7 @@ const createMessage = asyncHandler(async (req, res) => {
     res?.status(401);
     throw new Error(Strings.messageNotCreated);
   }
-
+  // for broadcasting a message to a chatroom in real-time
   // helpers.broadcastMessage(chatroom.id)
 
   res
