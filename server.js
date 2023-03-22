@@ -1,18 +1,10 @@
-const express = require("express");
-const mongoose = require("mongoose");
-const cors = require("cors");
 const dotenv = require("dotenv");
-const { errorHandler } = require('./middleware/error')
 const createServer = require('./utils/createServer')
+const connectDB = require('./utils/database')
 
 dotenv.config();
 
-mongoose
-  .connect(process.env.ATLAS_URI)
-  .then(() => console.log("DB Connection Successfull!"))
-  .catch((err) => {
-    console.log(err);
-  });
+connectDB()
 
 const app = createServer()
 
