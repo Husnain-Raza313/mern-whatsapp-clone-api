@@ -20,7 +20,7 @@ const getChatroomMessages = asyncHandler(async (req, res) => {
   const messages = await ChatroomMessageService.findChatroomMessages(
     chatroom.id
   );
-  console.log(messages);
+  console.log(messages); //messages array can be empty
 
   const sender = await ChatroomParticipantService.findChatroomParticipant(
     req.user.id,
@@ -28,16 +28,19 @@ const getChatroomMessages = asyncHandler(async (req, res) => {
   );
   console.log(sender);
 
+  if (!sender) {
+    res?.status(404);
+    throw new Error(Strings.userNotFound);
+  }
+
   // for connecting the users to a chat room
   // helpers.subscribeChatroom(chatroom.id)
 
-  res
-    ?.status(200)
-    .json({
-      messages: messages,
-      sender: sender,
-      message: Strings.messagesFetched,
-    });
+  res?.status(200).json({
+    messages: messages,
+    sender: sender,
+    message: Strings.messagesFetched,
+  });
 });
 
 const createChatroom = asyncHandler(async (req, res) => {
@@ -56,6 +59,11 @@ const createChatroom = asyncHandler(async (req, res) => {
 
   chatroom = await ChatroomService.createChatroom(chatroomName, req.user.id);
   console.log(chatroom);
+
+  if (!chatroom) {
+    res?.status(401);
+    throw new Error(Strings.chatNotCreated);
+  }
 
   const chatroomParticipant1 =
     await ChatroomParticipantService.createChatroomParticipant(

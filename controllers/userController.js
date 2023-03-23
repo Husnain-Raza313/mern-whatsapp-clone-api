@@ -4,8 +4,6 @@ const Strings = require("../config/strings");
 const helpers = require("../helpers/helpers");
 const UserService = require("../services/usersServices");
 const OtpService = require("../services/otpServices");
-const User = require("../models/userModel");
-const Otp = require("../models/otpModel");
 
 const accountSid = process.env.TWILIO_ACCOUNT_SID;
 const authToken = process.env.TWILIO_AUTH_TOKEN;
@@ -24,6 +22,11 @@ const registerUser = asyncHandler(async (req, res) => {
 
   const otp = await OtpService.findLatestOtp(phoneNumber);
   console.log(otp);
+
+  if (!otp) {
+    res?.status(404);
+    throw new Error(Strings.otpNotFound);
+  }
 
   if (otp.code !== otpCode) {
     console.log(otp.code);
@@ -50,7 +53,7 @@ const registerUser = asyncHandler(async (req, res) => {
 
       const deletedRecords = await OtpService.deleteOtpRecords(phoneNumber);
       console.log(deletedRecords);
-      
+
       res?.status(201).json([data, Strings.userCreatedSuccess]);
     }
   }
