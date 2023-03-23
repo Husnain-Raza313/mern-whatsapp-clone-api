@@ -15,12 +15,15 @@ const client = require("twilio")(accountSid, authToken);
 const registerUser = asyncHandler(async (req, res) => {
   const { name, username, phoneNumber, password, otpCode } = req?.body;
   const userExist = await UserService.findOneUser(phoneNumber);
+  console.log(userExist);
+
   if (userExist) {
     res?.status(400);
     throw new Error(Strings.userExists);
   }
 
   const otp = await OtpService.findLatestOtp(phoneNumber);
+  console.log(otp);
 
   if (otp.code !== otpCode) {
     console.log(otp.code);
@@ -35,13 +38,19 @@ const registerUser = asyncHandler(async (req, res) => {
       phoneNumber,
       hashPassword
     );
+    console.log(user);
+
     if (user) {
       const data = {
         _id: user.id,
         name: user.name,
         username: user.username,
       };
-      await OtpService.deleteOtpRecords(phoneNumber);
+      console.log(data);
+
+      const deletedRecords = await OtpService.deleteOtpRecords(phoneNumber);
+      console.log(deletedRecords);
+      
       res?.status(201).json([data, Strings.userCreatedSuccess]);
     }
   }
@@ -55,12 +64,15 @@ const checkUser = asyncHandler(async (req, res) => {
     from: otpPhoneNumber,
     to: req?.body?.phoneNumber,
   });
+  console.log(clientMessage);
+
   if (!clientMessage) {
     res?.status(400);
     throw new Error();
   }
 
   const newOtp = await OtpService.createOtp(req?.body?.phoneNumber, randomN);
+  console.log(newOtp);
 
   if (!newOtp) {
     res?.status(400);
@@ -74,6 +86,7 @@ const loginUser = asyncHandler(async (req, res) => {
   const { phoneNumber, password } = req?.body;
   const user = await UserService.findOneUser(phoneNumber);
   console.log(user);
+
   if (user && (await bcrypt.compare(password, user.password))) {
     const data = {
       _id: user.id,
@@ -82,6 +95,8 @@ const loginUser = asyncHandler(async (req, res) => {
       phoneNumber: user.phoneNumber,
       token: helpers.generateToken(user._id),
     };
+    console.log(data);
+
     res?.status(200).json([data, Strings.userLoggedInSuccess]);
   } else {
     res?.status(400);
@@ -93,6 +108,7 @@ const searchUser = asyncHandler(async (req, res) => {
   const usersList = req.query.name
     ? await UserService.searchUser(req?.query, req.user.name)
     : await UserService.findAllUsers();
+  console.log(usersList);
 
   if (!usersList) {
     res?.status(400);
