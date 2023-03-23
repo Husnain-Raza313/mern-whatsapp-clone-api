@@ -1,6 +1,6 @@
 const dotenv = require("dotenv");
-const createServer = require('./utils/createServer')
-const connectDB = require('./utils/database')
+const createServer = require('./config/createServer')
+const connectDB = require('./config/database')
 
 dotenv.config();
 
