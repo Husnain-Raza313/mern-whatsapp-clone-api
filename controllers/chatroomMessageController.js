@@ -7,7 +7,8 @@ const ChatroomParticipantService = require("../services/chatroomParticipantServi
 const ChatroomMessageService = require("../services/chatroomMessageServices");
 
 const getChatroomMessages = asyncHandler(async (req, res) => {
-  const { chatroomName } = req?.query;
+  const noOfMessages = 2;
+  const { chatroomName, patchNumber } = req?.query;
 
   const chatroom = await ChatroomService.findChatroom(chatroomName);
   console.log(chatroom);
@@ -18,7 +19,9 @@ const getChatroomMessages = asyncHandler(async (req, res) => {
   }
 
   const messages = await ChatroomMessageService.findChatroomMessages(
-    chatroom.id
+    chatroom.id,
+    noOfMessages,
+    patchNumber
   );
   console.log(messages); //messages array can be empty
 
