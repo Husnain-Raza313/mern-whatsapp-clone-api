@@ -1,7 +1,7 @@
 const ChatroomMessage = require("../models/chatroomMessageModel");
 
 exports.findChatroomMessages = async function (chatroomId, noOfMessages = 5, patchNumber = 0) {
-  return ChatroomMessage.find({ chatroomId }).limit(noOfMessages).skip(noOfMessages * patchNumber);
+  return ChatroomMessage.find({ chatroomId }).sort({ _id: -1 }).limit(noOfMessages).skip(noOfMessages * patchNumber);
 };
 
 exports.createChatroomMessage = async function (
