@@ -4,6 +4,8 @@ const Strings = require("../config/strings");
 const helpers = require("../helpers/helpers");
 const UserService = require("../services/usersServices");
 const OtpService = require("../services/otpServices");
+const dotenv = require("dotenv");
+dotenv.config();
 
 const accountSid = process.env.TWILIO_ACCOUNT_SID;
 const authToken = process.env.TWILIO_AUTH_TOKEN;
